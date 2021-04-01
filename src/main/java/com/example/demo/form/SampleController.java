@@ -67,13 +67,19 @@ public class SampleController {
         //이렇게 return을 하면 Callable안의 로직을 처리하기 전에 이미 응답을 내보냅니다.
         //1.해당 request를 처리하고 있는 Thread를 반환(release)
         //2.Callable안의 로직이 완료가 됐을 때쯤 응답을 내보냅니다.
-        return new Callable<String>() {
-            @Override
-            public String call() throws Exception {
+        return () -> {
                 SecurityLogger.log("Callable");
                 return "Async Handler";
-            }
         };
+    }
+
+    @GetMapping("/async-service")
+    @ResponseBody
+    public String asyncService() {
+        SecurityLogger.log("MVC, before async service");
+        sampleService.asyncService();
+        SecurityLogger.log("MVC, after async service");
+        return "Async Service";
     }
 
 

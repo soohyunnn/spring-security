@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 
 
@@ -52,6 +53,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.formLogin()  //그리고 formLogin 사용
                 .and()
                 .httpBasic(); //그리고 httoBasic 사용
+
+        //기본값은 동일한 Thread내에서만 공유됨.
+        //현재 Thread에서 하위 Thread로 SecurityContext가 공유가 됨.
+        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
 
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 
@@ -59,6 +60,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.httpBasic(); //그리고 httoBasic 사용
 
+        /*
+        http.sessionManagement()
+                .sessionFixation()
+                    .changeSessionId()
+                //.none()  //세션 변조를 사용하지 않겠다는 의미
+                //.newSession()  //세션을 새로 만들겠다는 의미
+                //.invalidSessionUrl("/login"); //유효하지 않은 세션이 접근했을 때 어디로 보낼것인가?
+                .maximumSessions(1)
+                    .maxSessionsPreventsLogin(true);
+
+        http.sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        */
         http.logout().logoutSuccessUrl("/");
 //                .logoutUrl("/logout")  //logout을 처리하는 url(기본으로 제공해주는 로그아웃 페이지가 /logout 임. 다른 url로 바꾸려면 새로 커스터마이징 한 페이지를 생성해야 합니다.
 //                  //logout이 성공하면 이동할 url

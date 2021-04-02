@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,7 +14,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 
 @Configuration
@@ -79,6 +87,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .invalidateHttpSession(true)  //로그아웃 한 후 HttpSession을 invalid 처리 할 것인가(기본값이 true)
 //                .deleteCookies();  //쿠키 기반의 인증 방법을 사용할 경우 로그아웃 한 후 쿠키를 삭제해주는 역할을 함.
 
+        //TODO ExceptionTranlatorFilter -> FilterSecurityInterceptor (인터페이스 : AccessDecisionManager, 구현체 : AffirmativeBased => 를 사용하여 인가처리)
+        //ExceptionTranlatorFilter가 FilterSecurityInterceptor보다 이전에 있어야 함.
+        //ExceptionTranlatorFilter에서 요청과 응답을 감싸거나 try~catch로 감싼 다음 그 다음 필터처리인 FilterSecurityInterceptor처리를 해야 함.
+        //인가 처리할 때 2가지 예외가 발생할 수 있음.(아래)
+        //TODO AuthenticationException (인증에러) -> AuthenricationEntryPoint를 사용하여 예외 처리(해당 유저가 인증이 가능하도록 인증하는 페이지로 보내는 역할 => 로그인을 하지 않고 "/dashboard" || "/admin" 에 접근하면 인증이 필요하여 login 페이지로 이동시키는 것)
+
+        //TODO AccessDeniedException (인증은 됐지만 권한이 충분하지 않는 에러) -> AccessDeniedHandler를 사용하여 예외 처리(403 상태값을 보여주면서 처리 => USER 권한을 가진 유저가 ADMIN 권한만 접근할 수 있는 페이지에 접근할 경우 발생)
+        //=> 에러 페이지 커스터마이징하기
+        http.exceptionHandling()
+                .accessDeniedHandler(new AccessDeniedHandler() {
+
+                    @Override
+                    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
+                        UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                        String username = principal.getUsername();
+                        //요청 URL 출력
+                        System.out.println(username + "is denied to access " + request.getRequestURI()); //TODO 서버쪽에 로그를 남기기 위해 실제로는 Logger를 사용
+                        response.sendRedirect("/access-denied");  //커스터마이징한 페이지로 이동
+                    }
+                });
 
 
         //기본값은 동일한 Thread내에서만 공유됨.

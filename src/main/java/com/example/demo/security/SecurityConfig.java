@@ -51,8 +51,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .expressionHandler(expressionHandler());
 
         http.formLogin()  //그리고 formLogin 사용
-                .and()
-                .httpBasic(); //그리고 httoBasic 사용
+//                .usernameParameter("my-username")
+//                .passwordParameter("my-password")
+//                .failureForwardUrl()  //로그인 실패시 이동할 url
+//                .successForwardUrl()  //로그인 성공시 이동할 url
+                .loginPage("/login").permitAll();  //로그인 페이지를 따로 설정(DefaultLogin/LogoutPageGeneratingFilter를 제공하지 X => 직접 구현해야 함)
+
+        http.httpBasic(); //그리고 httoBasic 사용
 
         http.logout().logoutSuccessUrl("/");
 //                .logoutUrl("/logout")  //logout을 처리하는 url(기본으로 제공해주는 로그아웃 페이지가 /logout 임. 다른 url로 바꾸려면 새로 커스터마이징 한 페이지를 생성해야 합니다.

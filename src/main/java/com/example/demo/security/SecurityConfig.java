@@ -54,7 +54,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.antMatcher("/**")  //모든 요청을 다 처리할 것데
                 .authorizeRequests()  //요청을 어떻게 인가할지 아래에 설정하는 과정이다. (http.authorizeRequests() : 요청의 인가 설정은...)
                 .mvcMatchers("/", "/info", "/account/**", "/signup").permitAll()  //루트 경로는 모든 사용자 접근 가능
-                .mvcMatchers("/admin").hasRole("ADMIN")  // '/admin' 경로는 권한이 ADMIN인 사용자만 접근 가능
+                .mvcMatchers("/admin").hasAuthority("ADMIN")  // '/admin' 경로는 권한이 ADMIN인 사용자만 접근 가능 => hasAuthority()는 앞에 ROLE_을 붙여줘야 함.
                 .mvcMatchers("/user").hasRole("USER")   //'/user' 경로는 권한이 USER인 사용자만 접근 가능
                 .anyRequest().authenticated()    //anyRequest()는 기타 등등을 의미, 기타 등등에 대한 접근은 인증만 하면 가능
                 .expressionHandler(expressionHandler());

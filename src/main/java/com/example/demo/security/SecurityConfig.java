@@ -1,5 +1,7 @@
 package com.example.demo.security;
 
+import com.example.demo.account.AccountService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -27,6 +29,9 @@ import java.io.IOException;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    AccountService accountService;
 
     public SecurityExpressionHandler expressionHandler() {
         RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
@@ -65,6 +70,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .failureForwardUrl()  //로그인 실패시 이동할 url
 //                .successForwardUrl()  //로그인 성공시 이동할 url
                 .loginPage("/login").permitAll();  //로그인 페이지를 따로 설정(DefaultLogin/LogoutPageGeneratingFilter를 제공하지 X => 직접 구현해야 함)
+
+        //로그인페이지에서 ID 기억하기 같은 체크페이지에서 활용.
+        http.rememberMe()
+                //.rememberMeParameter("remember")
+                //.tokenValiditySeconds(12)  //쿠키 유지 기간(기본값이 2주)
+                //.useSecureCookie(true)  //HTTPS 만 접근이 가능하도록 설정
+                //.alwaysRemember(true) //폼에서 전달해주는 모든 값을 쿠키에 저장해 두겠다는 설정
+                .userDetailsService(accountService)
+                .key("remember-me-sample");
 
         http.httpBasic(); //그리고 httoBasic 사용
 

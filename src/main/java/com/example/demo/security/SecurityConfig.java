@@ -1,6 +1,7 @@
 package com.example.demo.security;
 
 import com.example.demo.account.AccountService;
+import com.example.demo.common.LogginFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
+import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -56,9 +58,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        http.addFilterBefore(new LogginFilter(), WebAsyncManagerIntegrationFilter.class);  //WebAsyncManagerIntegrationFilter에 LoggingFilter를 추가. 
+
         http.antMatcher("/**")  //모든 요청을 다 처리할 것데
                 .authorizeRequests()  //요청을 어떻게 인가할지 아래에 설정하는 과정이다. (http.authorizeRequests() : 요청의 인가 설정은...)
-                .mvcMatchers("/", "/info", "/account/**", "/signup").permitAll()  //루트 경로는 모든 사용자 접근 가능
+                .mvcMatchers("/", "/info", "/account/**", "/signup").permitAll()  //루트 경로는 모든 사용자 가접근 가능
                 .mvcMatchers("/admin").hasAuthority("ADMIN")  // '/admin' 경로는 권한이 ADMIN인 사용자만 접근 가능 => hasAuthority()는 앞에 ROLE_을 붙여줘야 함.
                 .mvcMatchers("/user").hasRole("USER")   //'/user' 경로는 권한이 USER인 사용자만 접근 가능
                 .anyRequest().authenticated()    //anyRequest()는 기타 등등을 의미, 기타 등등에 대한 접근은 인증만 하면 가능

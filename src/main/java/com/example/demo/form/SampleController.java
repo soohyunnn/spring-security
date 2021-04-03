@@ -3,6 +3,7 @@ package com.example.demo.form;
 import com.example.demo.account.AccountContext;
 import com.example.demo.account.AccountRepository;
 import com.example.demo.account.UserAccount;
+import com.example.demo.book.BookRepository;
 import com.example.demo.common.CurrentUser;
 import com.example.demo.common.SecurityLogger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,9 @@ public class SampleController {
 
     @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private BookRepository bookRepository;
 /*
     @GetMapping("/")
     public String index(Model model, Principal principal) {
@@ -71,8 +75,10 @@ public class SampleController {
 
     @GetMapping("/user")
     public String user(Model model, Principal principal) {
-        model.addAttribute("message", "Hello User" + principal.getName());
-        return "user";  //뷰의 이름(templates에 만든 파일 이름)
+        model.addAttribute("message", "Hello User, " + principal.getName());
+        System.out.println("aaa::" + principal);
+        model.addAttribute("books", bookRepository.findCurrentUserBooks());
+        return "user";
     }
 
     @GetMapping("/async-handler")

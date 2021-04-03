@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 //GenericFilterBean 상속받아 구현하면 doFilter 하나만 구현하면 되서 간단하다.
-public class LogginFilter extends GenericFilterBean {
+public class LoggingFilter extends GenericFilterBean {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 

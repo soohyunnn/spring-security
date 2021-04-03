@@ -4,6 +4,7 @@ import com.example.demo.account.AccountService;
 import com.example.demo.common.LogginFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -11,6 +12,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -58,7 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.addFilterBefore(new LogginFilter(), WebAsyncManagerIntegrationFilter.class);  //WebAsyncManagerIntegrationFilter에 LoggingFilter를 추가. 
+        http.addFilterBefore(new LogginFilter(), WebAsyncManagerIntegrationFilter.class);  //WebAsyncManagerIntegrationFilter에 LoggingFilter를 추가.
 
         http.antMatcher("/**")  //모든 요청을 다 처리할 것데
                 .authorizeRequests()  //요청을 어떻게 인가할지 아래에 설정하는 과정이다. (http.authorizeRequests() : 요청의 인가 설정은...)
@@ -131,5 +133,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //현재 Thread에서 하위 Thread로 SecurityContext가 공유가 됨.
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
 
+    }
+
+    //Test에서 AuthenticationManager가 빈으로 생성되어 있지 않아서 오류가 발생하여 오버라이드 하여 빈 생성
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
     }
 }

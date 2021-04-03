@@ -28,11 +28,12 @@ public class AccountService implements UserDetailsService {
         //user정보가 있을 경우 UserDetails 타입으로 바꿔줘야 함.
         //즉, Account -> UserDetails 으로 바꿔줘야 함. 이러한 과정을 편리하게 하도록 SpringSecurity가 User라는 클래스를 제공해줌.
         //builder()를 사용해서 build()를 하면 User객체의 타입을 만들수 있음.
-        return User.builder()
-                .username(account.getUsername())
-                .password(account.getPassword())
-                .roles(account.getRole())
-                .build();
+//        return User.builder()
+//                .username(account.getUsername())
+//                .password(account.getPassword())
+//                .roles(account.getRole())
+//                .build();
+        return new UserAccount(account);
     }
 
     public Account createNew(Account account) {

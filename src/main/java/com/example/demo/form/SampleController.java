@@ -2,8 +2,11 @@ package com.example.demo.form;
 
 import com.example.demo.account.AccountContext;
 import com.example.demo.account.AccountRepository;
+import com.example.demo.account.UserAccount;
+import com.example.demo.common.CurrentUser;
 import com.example.demo.common.SecurityLogger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,13 +24,26 @@ public class SampleController {
 
     @Autowired
     private AccountRepository accountRepository;
-
+/*
     @GetMapping("/")
     public String index(Model model, Principal principal) {
         if(principal == null){
             model.addAttribute("message", "Hello Spring Security");
         } else {
             model.addAttribute("message", "Hello " + principal.getName());
+        }
+
+        return "index";  //뷰의 이름(templates에 만든 파일 이름)
+    }
+*/
+    @GetMapping("/")
+    public String index(Model model, @CurrentUser UserAccount userAccount) {
+        if(userAccount == null){
+            model.addAttribute("message", "Hello Spring Security");
+        } else {
+
+            //userAccount.getAccount().getUsername();  //이런식으로도 Username에 접근 가능
+            model.addAttribute("message", "Hello " + userAccount.getUsername());
         }
 
         return "index";  //뷰의 이름(templates에 만든 파일 이름)
